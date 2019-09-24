@@ -113,25 +113,28 @@ while sum(flag) < 60 :
 		#macro score for n
 		macro = []
 		promo_idx = [None, None, None]
-		for j in range(len(new_trusted[i])) :
-			ua = U_a(new_trusted[i][j])
-			la = L_a(new_trusted[i][j])
+		# for j in range(len(new_trusted[i])) :
+		# 	ua = U_a(new_trusted[i][j])
+		# 	la = L_a(new_trusted[i][j])
 			
-			for k in range(len(nouns)) :
-				if flag[k] == 0 :
-					#move nouns from 'nouns' to 'trusted'
-					micro(new_trusted[i][j], k)
+		# 	for k in range(len(nouns)) :
+		# 		if flag[k] == 0 :
+		# 			#move nouns from 'nouns' to 'trusted'
+		# 			micro(new_trusted[i][j], k)
+					
 		for k in range(len(nouns)) :
 			macro_curr = 0
 			if flag[k] == 0 :
 				for idx in range(len(trusted[i])) :
+					print('here')
 					macro_curr = macro_curr + micro(trusted[i][idx] ,k)
 			macro.append(macro_curr)
+			print(k, 'out of ', len(nouns))
 		
 		#Ranking instances by macro/|cat|
 		for j in range(len(macro)) :
 			macro[j] = macro[j] / len(trusted[i])
-		
+		print(macro)
 		#Getting top three instances
 		for j in range(3) :
 			promo = max(macro)

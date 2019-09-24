@@ -18,46 +18,156 @@ person_nouns = ['Albert', 'Emma', 'Ritesh', 'Sumit', 'Peter', 'Karen', 'Susan', 
 sports_nouns = ['football', 'cricket', 'soccer', 'wrestling', 'archery', 'marathaon', 'hockey', 'tennis', 'vollyball', 'table tennis', 'basketball', 'baseball', 'rugby', 'golf', 'gymnastics', 'cycling', 'skating', 'surfing', 'polo', 'ice hockey']
 #print(len(sports_nouns))
 
-context_k = [[] for _ in range(len(kitchen_nouns))]
-context_p = [[] for _ in range(len(person_nouns))]
-context_s = [[] for _ in range(len(sports_nouns))]
-all_nouns = kitchen_nouns + person_nouns + sports_nouns
 
-for i in range(len(kitchen_nouns)) :
-	c1 = random.sample(kitchen_items, 30)
-	c2 = random.sample(person, 10)
-	c3 = random.sample(sport, 10)
-	context_k[i] = c1 + c2 + c3
+#co-occurence matrix of size n x m for n nouns and m context_patterns
+total_nouns_len = len(person_nouns) + len(sports_nouns) + len(kitchen_nouns)
+total_context_len = len(kitchen_items) + len(sport) + len(person)
+co_matrix = [[0 for i in range(total_context_len)] for j in range(total_nouns_len)]
 
-for i in range(len(person_nouns)) :
-	c1 = random.sample(kitchen_items, 10)
-	c2 = random.sample(person, 30)
-	c3 = random.sample(sport, 10)
-	context_p[i] = c1 + c2 + c3
+# co_kitchen = [[0 for i in range(len(kitchen_items))] for j in range(len(kitchen_nouns))]
+# co_person = [[0 for i in range(len(person))] for j in range(len(person_nouns))]
+# co_sport = [[ 0 for i in range(len(sport))] for j in range(len(sports_nouns))]
 
-for i in range(len(sports_nouns)) :
-	c1 = random.sample(kitchen_items, 10)
-	c2 = random.sample(person, 10)
-	c3 = random.sample(sport, 30)
-	context_s[i] = c1 + c2 + c3
+rand_temp_in = [1, 2, 3]
+rand_temp_not_in = [0, 1]
+
+#initializing co-occurence matrix
+#for the kitchen nouns
+for i in range(0, len(kitchen_nouns)) :
+	for j in range(len(co_matrix[i])) :
+		if j in range(0, len(kitchen_items)) :
+			co_matrix[i][j] = random.choice(rand_temp_in)
+		else :
+			co_matrix[i][j] = random.choice(rand_temp_not_in)
+
+#for person nouns
+for i in range(len(kitchen_nouns), len(kitchen_nouns) + len(person_nouns)) :
+	for j in range(len(co_matrix[i])) :
+		if j in range(len(kitchen_items), len(kitchen_items) + len(person)) :
+			co_matrix[i][j] = random.choice(rand_temp_in)
+		else :
+			co_matrix[i][j] = random.choice(rand_temp_not_in)
+
+#for sports nouns
+for i in range(len(kitchen_nouns) + len(person_nouns), total_nouns_len) :
+	for j in range(len(co_matrix[i])) :
+		if j in range(len(kitchen_items) + len(person), total_context_len) :
+			co_matrix[i][j] = random.choice(rand_temp_in)
+		else :
+			co_matrix[i][j] = random.choice(rand_temp_not_in)
+
+
+# for row in co_matrix :
+# 	print(row)
+
+
+
+# for i in range(len(co_person)) :
+# 	for j in range(len(co_person[i])) :
+# 		co_person[i][j] = random.choice(rand_temp)
+
+# for i in range(len(co_sport)) :
+# 	for j in range(len(co_sport[i])) :
+# 		co_sport[i][j] = random.choice(rand_temp)
+
+
+# def pr(mat) :
+# 	for row in mat :
+# 		print(row)
+
+# pr(co_kitchen)
+# print()
+# pr(co_person)
+# print()
+# pr(co_sport)
+
+
+
+# context_k = [[] for _ in range(len(kitchen_nouns))]
+# context_p = [[] for _ in range(len(person_nouns))]
+# context_s = [[] for _ in range(len(sports_nouns))]
+# all_nouns = kitchen_nouns + person_nouns + sports_nouns
+
+# for i in range(len(kitchen_nouns)) :
+# 	curr_noun_context = []
+# 	for j in range(len(co_kitchen[i])) :
+# 		curr_noun_context.append()
+# 	context_k[i] = 
+
+
+# for i in range(len(person_nouns)) :
+# 	c1 = random.sample(kitchen_items, 10)
+# 	c2 = random.sample(person, 30)
+# 	c3 = random.sample(sport, 10)
+# 	context_p[i] = c1 + c2 + c3
+
+# for i in range(len(sports_nouns)) :
+# 	c1 = random.sample(kitchen_items, 10)
+# 	c2 = random.sample(person, 10)
+# 	c3 = random.sample(sport, 30)
+# 	context_s[i] = c1 + c2 + c3
 
 #contexts for nouns
-all_noun_context = context_k + context_p + context_s
-all_context = kitchen_items + person + sport
+all_nouns = kitchen_nouns + person_nouns + sports_nouns
+all_noun_context = [[] for _ in range(total_nouns_len)]
 
-#nouns for contexts
-all_context_noun = [[] for _ in range(len(all_context))]
-
-for i in range(len(all_context)) :
+for i in range(len(co_matrix)) :
 	common = []
-	for j in range(len(all_noun_context)) :
-		if all_context[i] in all_noun_context[j] :
-			common.append(all_nouns[j])
+	for j in range(len(co_matrix[0])) :
+		#get the current context
+		if j in range(0, len(kitchen_items)) :
+			context = kitchen_items[j]
+		elif j in range(len(kitchen_items), len(kitchen_items) + len(person)) :
+			context = person[j - len(kitchen_items)]
+		else :
+			context = sport[j - len(kitchen_items) - len(person)]
+
+		#append (context X co_matrix[i][j]) to common
+		for k in range(co_matrix[i][j]) :
+			common.append(context)
+
+	all_noun_context[i] = common
+
+
+
+all_context = kitchen_items + person + sport
+#nouns for contexts
+all_context_noun = [[] for _ in range(total_context_len)]
+
+for i in range(len(co_matrix[0])) :
+	common = []
+	for j in range(len(co_matrix)) :
+		#get the current noun
+		if j in range(0, len(kitchen_nouns)) :
+			noun = kitchen_nouns[j]
+		elif j in range(len(kitchen_nouns), len(kitchen_nouns) + len(person_nouns)) :
+			noun = person_nouns[j - len(kitchen_nouns)]
+		else :
+			noun = sports_nouns[j - len(kitchen_nouns) - len(person_nouns)]
+
+		#append (noun X co_matrix[i][j]) to common
+		for k in range(co_matrix[j][i]) :
+			common.append(noun)
+
 	all_context_noun[i] = common
 
 
+# for row in all_noun_context :
+# 	print(row)
+
+# print()
+
+# for row in all_context_noun :
+# 	print(row)
+# print()
 
 
+# for i in range(len(all_context)) :
+# 	common = []
+# 	for j in range(len(all_noun_context)) :
+# 		if all_context[i] in all_noun_context[j] :
+# 			common.append(all_nouns[j])
+# 	all_context_noun[i] = common
 
 
 
